@@ -1,4 +1,4 @@
-from datetime import datetime
+from sgp4.api import Satrec
 from SpaceMath import *
 from Bodies import *
 from Utilities import *
@@ -7,26 +7,16 @@ from Utilities import *
 
 class Orbit:
     """Default Constructor"""
-    def __init__(self, inclination, longitude_of_ascending_node, eccentricity, semi_major_axis=None, true_anomaly=None, mean_anomaly=None, mean_motion=None, body=Earth, time=datetime.now()):
-        self.inclination = inclination
-        self.longitude_of_ascending_node = longitude_of_ascending_node
-        self.eccentricity = eccentricity
-        self.semi_major_axis = semi_major_axis
-        self.true_anomaly = true_anomaly
-        self.mean_anomaly = mean_anomaly
-        self.mean_motion = mean_motion
-        self.body=body
-        self.time=time
+    def __init__(self):
+        self.model = Satrec()
 
     @property
     def semi_major_axis(self):
-        if self._semi_major_axis is None:
-            self._semi_major_axis = semi_major_axis_from_mean_motion(self.mean_motion, self.body.k)
-        return self._semi_major_axis
+        return self.model.a
     
     @semi_major_axis.setter
     def semi_major_axis(self, new_val):
-        self._semi_major_axis=new_val
+        self.model.a = new_val
 
     @property
     def true_anomaly(self):
@@ -74,18 +64,22 @@ class Orbit:
     @classmethod
     def fromTLE(cls, tle, time=None):
         """Construct an Orbit from a TLE"""
-        _, second_line, third_line = validateTLE(tle)
+        name, first_line, second_line = validateTLE(tle)
+        satrec = Satrec.twoline2rv(first_line, second_line)
 
-        inclination = float(third_line[8:16])
-        longitude_of_ascending_node = float(third_line[17:25])
-        eccentricity = float(third_line[26:33])
-        argument_of_perigee = float(third_line[34:42])             
-        mean_anomaly = float(third_line[43:51]) 
-        mean_motion = float(third_line[52:63])   
-        revs_at_epoch = third_line[63:68]              
-        
-        orbit = Orbit(inclination=inclination, longitude_of_ascending_node=longitude_of_ascending_node, eccentricity=eccentricity, mean_anomaly=mean_anomaly, mean_motion=mean_motion, time=time)
-        return orbit    
+        two_digit_year = satrec.epochyr
+        if two_digit_year < 57:
+            year = two_digit_year + 2000
+        else:
+            year = two_digit_year + 1900
+
+        self = cls.__new__(cls)
+        self.name = None if name is None else name
+        self.model = satrec
+        self.epoch = time.utc(year, 1, satrec.epochdays)
+        self.target = -100000 - satrec.satnum
+
+        return self 
 
     @classmethod
     def fromPosAndVelVectors(cls, positionVector, velocityVector, body, t=None):
