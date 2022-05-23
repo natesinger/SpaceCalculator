@@ -1,0 +1,320 @@
+%General Mission Analysis Tool(GMAT) Script
+%Created: 2022-05-21 19:27:47
+
+
+%----------------------------------------
+%---------- User-Defined Calculated Points
+%----------------------------------------
+
+Create LibrationPoint L4;
+GMAT L4.OrbitColor = GreenYellow;
+GMAT L4.TargetColor = DarkGray;
+GMAT L4.Primary = Sun;
+GMAT L4.Secondary = Earth;
+GMAT L4.Point = L4;
+
+%----------------------------------------
+%---------- Spacecraft
+%----------------------------------------
+
+Create Spacecraft MAVEN;
+GMAT MAVEN.DateFormat = TTGregorian;
+GMAT MAVEN.Epoch = '21 Jan 2022 00:00:00.000';
+GMAT MAVEN.CoordinateSystem = EarthMJ2000Eq;
+GMAT MAVEN.DisplayStateType = Keplerian;
+GMAT MAVEN.SMA = 295911.9425900034;
+GMAT MAVEN.ECC = 0.8898246770000008;
+GMAT MAVEN.INC = 27.0092517;
+GMAT MAVEN.RAAN = 17.82128320000001;
+GMAT MAVEN.AOP = 149.2278077;
+GMAT MAVEN.TA = 6.084727587000609;
+GMAT MAVEN.DryMass = 850;
+GMAT MAVEN.Cd = 2.2;
+GMAT MAVEN.Cr = 1.8;
+GMAT MAVEN.DragArea = 15;
+GMAT MAVEN.SRPArea = 1;
+GMAT MAVEN.SPADDragScaleFactor = 1;
+GMAT MAVEN.SPADSRPScaleFactor = 1;
+GMAT MAVEN.Tanks = {MainTank};
+GMAT MAVEN.NAIFId = -10001001;
+GMAT MAVEN.NAIFIdReferenceFrame = -9001001;
+GMAT MAVEN.OrbitColor = Red;
+GMAT MAVEN.TargetColor = Teal;
+GMAT MAVEN.OrbitErrorCovariance = [ 1e+70 0 0 0 0 0 ; 0 1e+70 0 0 0 0 ; 0 0 1e+70 0 0 0 ; 0 0 0 1e+70 0 0 ; 0 0 0 0 1e+70 0 ; 0 0 0 0 0 1e+70 ];
+GMAT MAVEN.CdSigma = 1e+70;
+GMAT MAVEN.CrSigma = 1e+70;
+GMAT MAVEN.Id = 'SatId';
+GMAT MAVEN.Attitude = CoordinateSystemFixed;
+GMAT MAVEN.SPADSRPInterpolationMethod = Bilinear;
+GMAT MAVEN.SPADSRPScaleFactorSigma = 1e+70;
+GMAT MAVEN.SPADDragInterpolationMethod = Bilinear;
+GMAT MAVEN.SPADDragScaleFactorSigma = 1e+70;
+GMAT MAVEN.ModelFile = 'aura.3ds';
+GMAT MAVEN.ModelOffsetX = 0;
+GMAT MAVEN.ModelOffsetY = 0;
+GMAT MAVEN.ModelOffsetZ = 0;
+GMAT MAVEN.ModelRotationX = 0;
+GMAT MAVEN.ModelRotationY = 0;
+GMAT MAVEN.ModelRotationZ = 0;
+GMAT MAVEN.ModelScale = 1;
+GMAT MAVEN.AttitudeDisplayStateType = 'Quaternion';
+GMAT MAVEN.AttitudeRateDisplayStateType = 'AngularVelocity';
+GMAT MAVEN.AttitudeCoordinateSystem = EarthMJ2000Ec;
+GMAT MAVEN.EulerAngleSequence = '321';
+
+%----------------------------------------
+%---------- Hardware Components
+%----------------------------------------
+
+Create ChemicalTank MainTank;
+GMAT MainTank.AllowNegativeFuelMass = false;
+GMAT MainTank.FuelMass = 1718;
+GMAT MainTank.Pressure = 5000;
+GMAT MainTank.Temperature = 20;
+GMAT MainTank.RefTemperature = 20;
+GMAT MainTank.Volume = 2;
+GMAT MainTank.FuelDensity = 1000;
+GMAT MainTank.PressureModel = PressureRegulated;
+
+%----------------------------------------
+%---------- ForceModels
+%----------------------------------------
+
+Create ForceModel NearEarth_ForceModel;
+GMAT NearEarth_ForceModel.CentralBody = Earth;
+GMAT NearEarth_ForceModel.PrimaryBodies = {Earth};
+GMAT NearEarth_ForceModel.PointMasses = {Luna, Sun};
+GMAT NearEarth_ForceModel.Drag = None;
+GMAT NearEarth_ForceModel.SRP = On;
+GMAT NearEarth_ForceModel.RelativisticCorrection = Off;
+GMAT NearEarth_ForceModel.ErrorControl = RSSStep;
+GMAT NearEarth_ForceModel.GravityField.Earth.Degree = 4;
+GMAT NearEarth_ForceModel.GravityField.Earth.Order = 4;
+GMAT NearEarth_ForceModel.GravityField.Earth.StmLimit = 100;
+GMAT NearEarth_ForceModel.GravityField.Earth.PotentialFile = 'JGM2.cof';
+GMAT NearEarth_ForceModel.GravityField.Earth.TideModel = 'None';
+GMAT NearEarth_ForceModel.SRP.Flux = 1367;
+GMAT NearEarth_ForceModel.SRP.SRPModel = Spherical;
+GMAT NearEarth_ForceModel.SRP.Nominal_Sun = 149597870.691;
+
+Create ForceModel DeepSpace_ForceModel;
+GMAT DeepSpace_ForceModel.CentralBody = Sun;
+GMAT DeepSpace_ForceModel.PointMasses = {Earth, Jupiter, Luna, Mars, Neptune, Saturn, Sun, Uranus, Venus};
+GMAT DeepSpace_ForceModel.Drag = None;
+GMAT DeepSpace_ForceModel.SRP = On;
+GMAT DeepSpace_ForceModel.RelativisticCorrection = Off;
+GMAT DeepSpace_ForceModel.ErrorControl = RSSStep;
+GMAT DeepSpace_ForceModel.SRP.Flux = 1367;
+GMAT DeepSpace_ForceModel.SRP.SRPModel = Spherical;
+GMAT DeepSpace_ForceModel.SRP.Nominal_Sun = 149597870.691;
+
+%----------------------------------------
+%---------- Propagators
+%----------------------------------------
+
+Create Propagator NearEarth;
+GMAT NearEarth.FM = NearEarth_ForceModel;
+GMAT NearEarth.Type = RungeKutta89;
+GMAT NearEarth.InitialStepSize = 60;
+GMAT NearEarth.Accuracy = 9.999999999999999e-12;
+GMAT NearEarth.MinStep = 0.001;
+GMAT NearEarth.MaxStep = 2700;
+GMAT NearEarth.MaxStepAttempts = 50;
+GMAT NearEarth.StopIfAccuracyIsViolated = true;
+
+Create Propagator DeepSpace;
+GMAT DeepSpace.FM = DeepSpace_ForceModel;
+GMAT DeepSpace.Type = RungeKutta89;
+GMAT DeepSpace.InitialStepSize = 60;
+GMAT DeepSpace.Accuracy = 9.999999999999999e-12;
+GMAT DeepSpace.MinStep = 0.001;
+GMAT DeepSpace.MaxStep = 2700;
+GMAT DeepSpace.MaxStepAttempts = 50;
+GMAT DeepSpace.StopIfAccuracyIsViolated = true;
+
+%----------------------------------------
+%---------- Burns
+%----------------------------------------
+
+Create ImpulsiveBurn TCM;
+GMAT TCM.CoordinateSystem = Local;
+GMAT TCM.Origin = Earth;
+GMAT TCM.Axes = VNB;
+GMAT TCM.Element1 = 0;
+GMAT TCM.Element2 = 0;
+GMAT TCM.Element3 = 0;
+GMAT TCM.DecrementMass = true;
+GMAT TCM.Tank = {MainTank};
+GMAT TCM.Isp = 300;
+GMAT TCM.GravitationalAccel = 9.81;
+
+Create ImpulsiveBurn MOI;
+GMAT MOI.CoordinateSystem = SunEcliptic;
+GMAT MOI.Element1 = 0;
+GMAT MOI.Element2 = 0;
+GMAT MOI.Element3 = 0;
+GMAT MOI.DecrementMass = true;
+GMAT MOI.Tank = {MainTank};
+GMAT MOI.Isp = 300;
+GMAT MOI.GravitationalAccel = 9.81;
+
+%----------------------------------------
+%---------- Coordinate Systems
+%----------------------------------------
+
+Create CoordinateSystem SunEcliptic;
+GMAT SunEcliptic.Origin = Sun;
+GMAT SunEcliptic.Axes = MJ2000Ec;
+
+Create CoordinateSystem L4CoordinateSystem;
+GMAT L4CoordinateSystem.Origin = L4;
+GMAT L4CoordinateSystem.Axes = ObjectReferenced;
+GMAT L4CoordinateSystem.XAxis = R;
+GMAT L4CoordinateSystem.ZAxis = N;
+GMAT L4CoordinateSystem.Primary = L4;
+GMAT L4CoordinateSystem.Secondary = Sun;
+
+%----------------------------------------
+%---------- Solvers
+%----------------------------------------
+
+Create DifferentialCorrector DefaultDC;
+GMAT DefaultDC.ShowProgress = true;
+GMAT DefaultDC.ReportStyle = Normal;
+GMAT DefaultDC.ReportFile = 'DifferentialCorrectorDC1.data';
+GMAT DefaultDC.MaximumIterations = 25;
+GMAT DefaultDC.DerivativeMethod = ForwardDifference;
+GMAT DefaultDC.Algorithm = NewtonRaphson;
+
+%----------------------------------------
+%---------- Subscribers
+%----------------------------------------
+
+Create OrbitView EarthView;
+GMAT EarthView.SolverIterations = Current;
+GMAT EarthView.UpperLeft = [ 0.001177856301531213 0 ];
+GMAT EarthView.Size = [ 0.5 0.4500574052812859 ];
+GMAT EarthView.RelativeZOrder = 184;
+GMAT EarthView.Maximized = true;
+GMAT EarthView.Add = {MAVEN, Earth};
+GMAT EarthView.CoordinateSystem = EarthMJ2000Eq;
+GMAT EarthView.DrawObject = [ true true ];
+GMAT EarthView.DataCollectFrequency = 1;
+GMAT EarthView.UpdatePlotFrequency = 50;
+GMAT EarthView.NumPointsToRedraw = 0;
+GMAT EarthView.ShowPlot = true;
+GMAT EarthView.MaxPlotPoints = 20000;
+GMAT EarthView.ShowLabels = true;
+GMAT EarthView.ViewPointReference = Earth;
+GMAT EarthView.ViewPointVector = [ 0 0 30000 ];
+GMAT EarthView.ViewDirection = Earth;
+GMAT EarthView.ViewScaleFactor = 4;
+GMAT EarthView.ViewUpCoordinateSystem = EarthMJ2000Eq;
+GMAT EarthView.ViewUpAxis = Z;
+GMAT EarthView.EclipticPlane = Off;
+GMAT EarthView.XYPlane = On;
+GMAT EarthView.WireFrame = Off;
+GMAT EarthView.Axes = On;
+GMAT EarthView.Grid = Off;
+GMAT EarthView.SunLine = Off;
+GMAT EarthView.UseInitialView = On;
+GMAT EarthView.StarCount = 7000;
+GMAT EarthView.EnableStars = On;
+GMAT EarthView.EnableConstellations = On;
+
+Create OrbitView SolarSystemView;
+GMAT SolarSystemView.SolverIterations = Current;
+GMAT SolarSystemView.UpperLeft = [ 0.00176678445229682 0 ];
+GMAT SolarSystemView.Size = [ 0.5 0.4500574052812859 ];
+GMAT SolarSystemView.RelativeZOrder = 198;
+GMAT SolarSystemView.Maximized = true;
+GMAT SolarSystemView.Add = {MAVEN, Earth, L4, Sun};
+GMAT SolarSystemView.CoordinateSystem = SunEcliptic;
+GMAT SolarSystemView.DrawObject = [ true true true true ];
+GMAT SolarSystemView.DataCollectFrequency = 1;
+GMAT SolarSystemView.UpdatePlotFrequency = 50;
+GMAT SolarSystemView.NumPointsToRedraw = 0;
+GMAT SolarSystemView.ShowPlot = true;
+GMAT SolarSystemView.MaxPlotPoints = 20000;
+GMAT SolarSystemView.ShowLabels = true;
+GMAT SolarSystemView.ViewPointReference = Sun;
+GMAT SolarSystemView.ViewPointVector = [ 0 0 500000000 ];
+GMAT SolarSystemView.ViewDirection = Sun;
+GMAT SolarSystemView.ViewScaleFactor = 1;
+GMAT SolarSystemView.ViewUpCoordinateSystem = SunEcliptic;
+GMAT SolarSystemView.ViewUpAxis = Z;
+GMAT SolarSystemView.EclipticPlane = Off;
+GMAT SolarSystemView.XYPlane = On;
+GMAT SolarSystemView.WireFrame = Off;
+GMAT SolarSystemView.Axes = On;
+GMAT SolarSystemView.Grid = Off;
+GMAT SolarSystemView.SunLine = Off;
+GMAT SolarSystemView.UseInitialView = On;
+GMAT SolarSystemView.StarCount = 7000;
+GMAT SolarSystemView.EnableStars = On;
+GMAT SolarSystemView.EnableConstellations = On;
+
+Create ReportFile ReportFile1;
+GMAT ReportFile1.SolverIterations = Current;
+GMAT ReportFile1.UpperLeft = [ 0 0 ];
+GMAT ReportFile1.Size = [ 0 0 ];
+GMAT ReportFile1.RelativeZOrder = 0;
+GMAT ReportFile1.Maximized = false;
+GMAT ReportFile1.Filename = 'ReportFile1.txt';
+GMAT ReportFile1.Precision = 16;
+GMAT ReportFile1.WriteHeaders = true;
+GMAT ReportFile1.LeftJustify = On;
+GMAT ReportFile1.ZeroFill = Off;
+GMAT ReportFile1.FixedWidth = true;
+GMAT ReportFile1.Delimiter = ' ';
+GMAT ReportFile1.ColumnWidth = 23;
+GMAT ReportFile1.WriteReport = true;
+
+Create OrbitView EarthView2;
+GMAT EarthView2.SolverIterations = Current;
+GMAT EarthView2.UpperLeft = [ 0.001177856301531213 0 ];
+GMAT EarthView2.Size = [ 0.5 0.4500574052812859 ];
+GMAT EarthView2.RelativeZOrder = 184;
+GMAT EarthView2.Maximized = true;
+GMAT EarthView2.Add = {MAVEN, Earth};
+GMAT EarthView2.CoordinateSystem = EarthMJ2000Eq;
+GMAT EarthView2.DrawObject = [ true true ];
+GMAT EarthView2.DataCollectFrequency = 1;
+GMAT EarthView2.UpdatePlotFrequency = 50;
+GMAT EarthView2.NumPointsToRedraw = 0;
+GMAT EarthView2.ShowPlot = true;
+GMAT EarthView2.MaxPlotPoints = 20000;
+GMAT EarthView2.ShowLabels = true;
+GMAT EarthView2.ViewPointReference = Earth;
+GMAT EarthView2.ViewPointVector = [ 0 0 30000 ];
+GMAT EarthView2.ViewDirection = Earth;
+GMAT EarthView2.ViewScaleFactor = 4;
+GMAT EarthView2.ViewUpCoordinateSystem = EarthMJ2000Eq;
+GMAT EarthView2.ViewUpAxis = Z;
+GMAT EarthView2.EclipticPlane = Off;
+GMAT EarthView2.XYPlane = On;
+GMAT EarthView2.WireFrame = Off;
+GMAT EarthView2.Axes = On;
+GMAT EarthView2.Grid = Off;
+GMAT EarthView2.SunLine = Off;
+GMAT EarthView2.UseInitialView = On;
+GMAT EarthView2.StarCount = 7000;
+GMAT EarthView2.EnableStars = On;
+GMAT EarthView2.EnableConstellations = On;
+
+%----------------------------------------
+%---------- Functions
+%----------------------------------------
+
+Create GmatFunction TargeterInsideFunction;
+GMAT TargeterInsideFunction.FunctionPath = 'C:\Users\rian2\Desktop\CTFs\Projects\HackASat\SpaceCalculator\TargeterInsideFunction.gmf';
+
+
+%----------------------------------------
+%---------- Mission Sequence
+%----------------------------------------
+
+BeginMissionSequence;
+Global 'Make Objects Global' DefaultDC EarthView NearEarth_ForceModel MainTank MAVEN MOI ReportFile1 SolarSystemView TCM;
+GMAT 'Target Desired B-Plane Coord. From Inside Function' TargeterInsideFunction;
+Report 'Report Parameters' ReportFile1 MAVEN.A1ModJulian TCM.Element1 TCM.Element2 TCM.Element3;

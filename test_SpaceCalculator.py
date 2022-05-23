@@ -5,7 +5,7 @@ from Utilities import *
 def test_ILikeToWatch():
     tle = """REDACT
     1 13337U 98067A   20087.38052801 -.00000452  00000-0  00000+0 0  9995
-    2 13337  51.6460  33.2488 0005270  61.9928  83.3154 15.48919755219337
+    2 13337  51.6460  33.2488 0005270   61.9928  83.3154 15.48919755219337 
     """
     name, first_line, second_line = validateTLE(tle)
     time = datetime(2020, 3, 26, 21, 52, 55, tzinfo=timezone.utc)

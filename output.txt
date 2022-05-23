@@ -1,0 +1,40 @@
+qX: -120	 qY: 650	 qZ: -1000	 qW: 680
+Normalized Quaternion = [-0.08707319, 0.47164645, -0.72560993, 0.49341475]
+Current DeggresOff: 0.37	 Best: 0.37
+
+qX: -120	 qY: 650	 qZ: -1000	 qW: 681
+Normalized Quaternion = [-0.08704201, 0.47147756, -0.72535009, 0.49396341]
+Current DeggresOff: 0.352	 Best: 0.352
+
+qX: -120	 qY: 650	 qZ: -1000	 qW: 682
+Normalized Quaternion = [-0.08701082, 0.4713086, -0.72509015, 0.49451148]
+Current DeggresOff: 0.348	 Best: 0.348
+
+qX: -120	 qY: 650	 qZ: -1000	 qW: 683
+Normalized Quaternion = [-0.08697961, 0.47113957, -0.7248301, 0.49505896]
+Current DeggresOff: 0.359	 Best: 0.348
+
+qX: -120	 qY: 650	 qZ: -1000	 qW: 684
+Normalized Quaternion = [-0.0869484, 0.47097047, -0.72456996, 0.49560585]
+Current DeggresOff: 0.383	 Best: 0.348
+
+qX: -120	 qY: 650	 qZ: -1000	 qW: 685
+Normalized Quaternion = [-0.08691717, 0.47080132, -0.72430972, 0.49615216]
+Current DeggresOff: 0.418	 Best: 0.348
+
+qX: -120	 qY: 650	 qZ: -1000	 qW: 686
+Normalized Quaternion = [-0.08688592, 0.47063209, -0.72404937, 0.49669787]
+Current DeggresOff: 0.462	 Best: 0.348
+
+qX: -120	 qY: 650	 qZ: -1000	 qW: 687
+Normalized Quaternion = [-0.08685467, 0.47046281, -0.72378893, 0.497243]
+Current DeggresOff: 0.512	 Best: 0.348
+
+qX: -120	 qY: 650	 qZ: -1000	 qW: 688
+Normalized Quaternion = [-0.08682341, 0.47029345, -0.72352839, 0.49778753]
+Current DeggresOff: 0.567	 Best: 0.348
+
+qX: -120	 qY: 650	 qZ: -1000	 qW: 689
+Normalized Quaternion = [-0.08679213, 0.47012404, -0.72326775, 0.49833148]
+Current DeggresOff: 0.625	 Best: 0.348
+

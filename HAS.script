@@ -1,0 +1,229 @@
+%  Create the libration point and rotating libration point coordinate system
+
+%----------------------------------------
+%---------- User-Defined Calculated Points
+%----------------------------------------
+
+Create LibrationPoint EarthMoonL4;
+GMAT EarthMoonL4.OrbitColor = GreenYellow;
+GMAT EarthMoonL4.TargetColor = DarkGray;
+GMAT EarthMoonL4.Primary = Earth;
+GMAT EarthMoonL4.Secondary = Luna;
+GMAT EarthMoonL4.Point = L4;
+
+%----------------------------------------
+%---------- Spacecraft
+%----------------------------------------
+
+%  Configure the spacecraft and propagator
+Create Spacecraft NSL_Sat;
+GMAT NSL_Sat.DateFormat = TTGregorian;
+GMAT NSL_Sat.Epoch = '21 Jan 2022 00:00:00.000';
+GMAT NSL_Sat.CoordinateSystem = EarthMJ2000Ec;
+GMAT NSL_Sat.DisplayStateType = Keplerian;
+GMAT NSL_Sat.SMA = 295911.9425900034;
+GMAT NSL_Sat.ECC = 0.8898246770000008;
+GMAT NSL_Sat.INC = 27.0092517;
+GMAT NSL_Sat.RAAN = 17.82128320000001;
+GMAT NSL_Sat.AOP = 149.2278077;
+%NSL_Sat.MA = 0.1621535087
+GMAT NSL_Sat.TA = 6.084727587000669;
+GMAT NSL_Sat.DryMass = 850;
+GMAT NSL_Sat.Cd = 2.2;
+GMAT NSL_Sat.Cr = 1.8;
+GMAT NSL_Sat.DragArea = 15;
+GMAT NSL_Sat.SRPArea = 1;
+GMAT NSL_Sat.SPADDragScaleFactor = 1;
+GMAT NSL_Sat.SPADSRPScaleFactor = 1;
+GMAT NSL_Sat.NAIFId = -10452001;
+GMAT NSL_Sat.NAIFIdReferenceFrame = -9452001;
+GMAT NSL_Sat.OrbitColor = Red;
+GMAT NSL_Sat.TargetColor = Teal;
+GMAT NSL_Sat.OrbitErrorCovariance = [ 1e+70 0 0 0 0 0 ; 0 1e+70 0 0 0 0 ; 0 0 1e+70 0 0 0 ; 0 0 0 1e+70 0 0 ; 0 0 0 0 1e+70 0 ; 0 0 0 0 0 1e+70 ];
+GMAT NSL_Sat.CdSigma = 1e+70;
+GMAT NSL_Sat.CrSigma = 1e+70;
+GMAT NSL_Sat.Id = 'SatId';
+GMAT NSL_Sat.Attitude = CoordinateSystemFixed;
+GMAT NSL_Sat.SPADSRPInterpolationMethod = Bilinear;
+GMAT NSL_Sat.SPADSRPScaleFactorSigma = 1e+70;
+GMAT NSL_Sat.SPADDragInterpolationMethod = Bilinear;
+GMAT NSL_Sat.SPADDragScaleFactorSigma = 1e+70;
+GMAT NSL_Sat.ModelFile = 'aura.3ds';
+GMAT NSL_Sat.ModelOffsetX = 0;
+GMAT NSL_Sat.ModelOffsetY = 0;
+GMAT NSL_Sat.ModelOffsetZ = 0;
+GMAT NSL_Sat.ModelRotationX = 0;
+GMAT NSL_Sat.ModelRotationY = 0;
+GMAT NSL_Sat.ModelRotationZ = 0;
+GMAT NSL_Sat.ModelScale = 1;
+GMAT NSL_Sat.AttitudeDisplayStateType = 'Quaternion';
+GMAT NSL_Sat.AttitudeRateDisplayStateType = 'AngularVelocity';
+GMAT NSL_Sat.AttitudeCoordinateSystem = EarthMJ2000Eq;
+GMAT NSL_Sat.EulerAngleSequence = '321';
+
+%----------------------------------------
+%---------- ForceModels
+%----------------------------------------
+
+Create ForceModel EarthMoonL4Prop_ForceModel;
+GMAT EarthMoonL4Prop_ForceModel.CentralBody = Earth;
+GMAT EarthMoonL4Prop_ForceModel.PointMasses = {Earth, Luna, Sun};
+GMAT EarthMoonL4Prop_ForceModel.Drag = None;
+GMAT EarthMoonL4Prop_ForceModel.SRP = Off;
+GMAT EarthMoonL4Prop_ForceModel.RelativisticCorrection = Off;
+GMAT EarthMoonL4Prop_ForceModel.ErrorControl = RSSStep;
+
+%----------------------------------------
+%---------- Propagators
+%----------------------------------------
+
+Create Propagator EarthMoonL4Prop;
+GMAT EarthMoonL4Prop.FM = EarthMoonL4Prop_ForceModel;
+GMAT EarthMoonL4Prop.Type = RungeKutta89;
+GMAT EarthMoonL4Prop.InitialStepSize = 60;
+GMAT EarthMoonL4Prop.Accuracy = 9.999999999999999e-12;
+GMAT EarthMoonL4Prop.MinStep = 0.001;
+GMAT EarthMoonL4Prop.MaxStep = 2700;
+GMAT EarthMoonL4Prop.MaxStepAttempts = 50;
+GMAT EarthMoonL4Prop.StopIfAccuracyIsViolated = true;
+
+%----------------------------------------
+%---------- Burns
+%----------------------------------------
+
+Create ImpulsiveBurn Transfer;
+GMAT Transfer.CoordinateSystem = EarthMJ2000Ec;
+GMAT Transfer.Element1 = 0;
+GMAT Transfer.Element2 = 0;
+GMAT Transfer.Element3 = 0;
+GMAT Transfer.DecrementMass = false;
+GMAT Transfer.Isp = 300;
+GMAT Transfer.GravitationalAccel = 9.81;
+
+Create ImpulsiveBurn matchVel;
+GMAT matchVel.CoordinateSystem = EarthMJ2000Ec;
+GMAT matchVel.Element1 = 0;
+GMAT matchVel.Element2 = 0;
+GMAT matchVel.Element3 = 0;
+GMAT matchVel.DecrementMass = false;
+GMAT matchVel.Isp = 300;
+GMAT matchVel.GravitationalAccel = 9.81;
+
+%----------------------------------------
+%---------- Coordinate Systems
+%----------------------------------------
+
+Create CoordinateSystem EarthMoonRotLibCoord;
+GMAT EarthMoonRotLibCoord.Origin = EarthMoonL4;
+GMAT EarthMoonRotLibCoord.Axes = ObjectReferenced;
+GMAT EarthMoonRotLibCoord.XAxis = R;
+GMAT EarthMoonRotLibCoord.ZAxis = N;
+GMAT EarthMoonRotLibCoord.Primary = Earth;
+GMAT EarthMoonRotLibCoord.Secondary = Luna;
+
+%----------------------------------------
+%---------- Solvers
+%----------------------------------------
+
+Create DifferentialCorrector DefaultDC;
+GMAT DefaultDC.ShowProgress = true;
+GMAT DefaultDC.ReportStyle = Normal;
+GMAT DefaultDC.ReportFile = 'DifferentialCorrectorDefaultDC.data';
+GMAT DefaultDC.MaximumIterations = 25;
+GMAT DefaultDC.DerivativeMethod = ForwardDifference;
+GMAT DefaultDC.Algorithm = NewtonRaphson;
+
+%----------------------------------------
+%---------- Subscribers
+%----------------------------------------
+
+Create ReportFile rf;
+GMAT rf.SolverIterations = Current;
+GMAT rf.UpperLeft = [ 0 0 ];
+GMAT rf.Size = [ 0 0 ];
+GMAT rf.RelativeZOrder = 0;
+GMAT rf.Maximized = false;
+GMAT rf.Filename = 'rf.txt';
+GMAT rf.Precision = 16;
+GMAT rf.WriteHeaders = true;
+GMAT rf.LeftJustify = On;
+GMAT rf.ZeroFill = Off;
+GMAT rf.FixedWidth = true;
+GMAT rf.Delimiter = ' ';
+GMAT rf.ColumnWidth = 23;
+GMAT rf.WriteReport = true;
+
+%  Create the orbit view
+Create OrbitView ViewEarthMoonRot;
+GMAT ViewEarthMoonRot.SolverIterations = Current;
+GMAT ViewEarthMoonRot.UpperLeft = [ 0 0 ];
+GMAT ViewEarthMoonRot.Size = [ 0 0 ];
+GMAT ViewEarthMoonRot.RelativeZOrder = 0;
+GMAT ViewEarthMoonRot.Maximized = false;
+GMAT ViewEarthMoonRot.Add = {Earth, Luna, Sun, NSL_Sat, EarthMoonL4};
+GMAT ViewEarthMoonRot.CoordinateSystem = EarthMJ2000Ec;
+GMAT ViewEarthMoonRot.DrawObject = [ true true true true true ];
+GMAT ViewEarthMoonRot.DataCollectFrequency = 1;
+GMAT ViewEarthMoonRot.UpdatePlotFrequency = 50;
+GMAT ViewEarthMoonRot.NumPointsToRedraw = 0;
+GMAT ViewEarthMoonRot.ShowPlot = true;
+GMAT ViewEarthMoonRot.MaxPlotPoints = 20000;
+GMAT ViewEarthMoonRot.ShowLabels = true;
+GMAT ViewEarthMoonRot.ViewPointReference = Earth;
+GMAT ViewEarthMoonRot.ViewPointVector = [ 0 0 30000 ];
+GMAT ViewEarthMoonRot.ViewDirection = Earth;
+GMAT ViewEarthMoonRot.ViewScaleFactor = 5;
+GMAT ViewEarthMoonRot.ViewUpCoordinateSystem = EarthMJ2000Eq;
+GMAT ViewEarthMoonRot.ViewUpAxis = Z;
+GMAT ViewEarthMoonRot.EclipticPlane = Off;
+GMAT ViewEarthMoonRot.XYPlane = On;
+GMAT ViewEarthMoonRot.WireFrame = Off;
+GMAT ViewEarthMoonRot.Axes = On;
+GMAT ViewEarthMoonRot.Grid = Off;
+GMAT ViewEarthMoonRot.SunLine = Off;
+GMAT ViewEarthMoonRot.UseInitialView = On;
+GMAT ViewEarthMoonRot.StarCount = 7000;
+GMAT ViewEarthMoonRot.EnableStars = On;
+GMAT ViewEarthMoonRot.EnableConstellations = Off;
+
+
+%----------------------------------------
+%---------- Mission Sequence
+%----------------------------------------
+
+
+BeginMissionSequence;
+
+Propagate 'Prop to Apo' EarthMoonL4Prop(NSL_Sat) {NSL_Sat.Earth.Apoapsis};
+Report 'Report Parameters' rf NSL_Sat.TTGregorian;
+Target 'Target Transfer' DefaultDC {SolveMode = Solve, ExitMode = SaveAndContinue, ShowProgressWindow = true};
+   Vary 'Vary Transfer.V' DefaultDC(Transfer.Element1 = -0.00390894987, {Perturbation = 0.00001, Lower = -9.999999e300, Upper = 9.999999e300, MaxStep = 1, AdditiveScaleFactor = 0.0, MultiplicativeScaleFactor = 1.0});
+   Vary 'Vary Transfer.N' DefaultDC(Transfer.Element2 = 0.8238644270587, {Perturbation = 0.00001, Lower = -9.999999e300, Upper = 9.999999e300, MaxStep = 1, AdditiveScaleFactor = 0.0, MultiplicativeScaleFactor = 1.0});
+   Vary 'Vary Transfer.B' DefaultDC(Transfer.Element3 = -0.096051923825, {Perturbation = 0.00001, Lower = -9.999999e300, Upper = 9.999999e300, MaxStep = 1, AdditiveScaleFactor = 0.0, MultiplicativeScaleFactor = 1.0});
+   
+   Maneuver 'Apply Transfer' Transfer(NSL_Sat);
+   Report 'Report Parameters' rf NSL_Sat.TTGregorian;
+   
+   Propagate 'Prop Day' EarthMoonL4Prop(NSL_Sat) {NSL_Sat.ElapsedDays = 4};
+   Achieve 'Achieve X' DefaultDC(NSL_Sat.EarthMoonRotLibCoord.X = EarthMoonL4.EarthMoonRotLibCoord.X, {Tolerance = 0.00001});
+   Achieve 'Achieve Y' DefaultDC(NSL_Sat.EarthMoonRotLibCoord.Y = EarthMoonL4.EarthMoonRotLibCoord.Y, {Tolerance = 0.00001});
+   Achieve 'Achieve Z' DefaultDC(NSL_Sat.EarthMoonRotLibCoord.Z = EarthMoonL4.EarthMoonRotLibCoord.Z, {Tolerance = 0.00001});
+   Vary 'Vary Transfer.V' DefaultDC(matchVel.Element1 = 0.01, {Perturbation = 0.00001, Lower = -9.999999e300, Upper = 9.999999e300, MaxStep = 10, AdditiveScaleFactor = 0.0, MultiplicativeScaleFactor = 1.0});
+   Vary 'Vary Transfer.N' DefaultDC(matchVel.Element2 = 0.04, {Perturbation = 0.00001, Lower = -9.999999e300, Upper = 9.999999e300, MaxStep = 10, AdditiveScaleFactor = 0.0, MultiplicativeScaleFactor = 1.0});
+   Vary 'Vary Transfer.B' DefaultDC(matchVel.Element3 = -0.1, {Perturbation = 0.00001, Lower = -9.999999e300, Upper = 9.999999e300, MaxStep = 10, AdditiveScaleFactor = 0.0, MultiplicativeScaleFactor = 1.0});
+   
+   Maneuver 'Apply matchVel' matchVel(NSL_Sat);
+   Report 'Report Parameters' rf NSL_Sat.TTGregorian;
+   
+   Propagate 'Prop Day' EarthMoonL4Prop(NSL_Sat) {NSL_Sat.ElapsedDays = 2};
+   Achieve 'Achieve X' DefaultDC(NSL_Sat.EarthMoonRotLibCoord.VX = EarthMoonL4.EarthMoonRotLibCoord.VX, {Tolerance = 0.01});
+   Achieve 'Achieve Y' DefaultDC(NSL_Sat.EarthMoonRotLibCoord.VY = EarthMoonL4.EarthMoonRotLibCoord.VY, {Tolerance = 0.01});
+   Achieve 'Achieve Z' DefaultDC(NSL_Sat.EarthMoonRotLibCoord.VZ = EarthMoonL4.EarthMoonRotLibCoord.VZ, {Tolerance = 0.01});
+   Achieve 'Achieve X' DefaultDC(NSL_Sat.EarthMoonRotLibCoord.X = EarthMoonL4.EarthMoonRotLibCoord.X, {Tolerance = 0.01});
+   Achieve 'Achieve Y' DefaultDC(NSL_Sat.EarthMoonRotLibCoord.Y = EarthMoonL4.EarthMoonRotLibCoord.Y, {Tolerance = 0.01});
+   Achieve 'Achieve Z' DefaultDC(NSL_Sat.EarthMoonRotLibCoord.Z = EarthMoonL4.EarthMoonRotLibCoord.Z, {Tolerance = 0.01});
+   
+EndTarget;  % For targeter DefaultDC
+
+Propagate 'Prop Day' EarthMoonL4Prop(NSL_Sat) {NSL_Sat.ElapsedDays = 60};
+Report 'Report Parameters' rf NSL_Sat.X NSL_Sat.Y NSL_Sat.Z NSL_Sat.VX NSL_Sat.VY NSL_Sat.VZ NSL_Sat.INC;

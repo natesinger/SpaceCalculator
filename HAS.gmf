@@ -1,0 +1,50 @@
+%  Create the libration point and rotating libration point coordinate system
+Create LibrationPoint EarthMoonL4
+EarthMoonL4.Primary   = Earth
+EarthMoonL4.Secondary = Luna
+EarthMoonL4.Point     = L4
+
+Create CoordinateSystem EarthMoonRotLibCoord
+EarthMoonRotLibCoord.Origin    = EarthMoonL4
+EarthMoonRotLibCoord.Axes      = ObjectReferenced
+EarthMoonRotLibCoord.XAxis     = R
+EarthMoonRotLibCoord.ZAxis     = N
+EarthMoonRotLibCoord.Primary   = Earth
+EarthMoonRotLibCoord.Secondary = Luna
+
+%  Configure the spacecraft and propagator
+Create Spacecraft NSL_Sat
+NSL_Sat.DateFormat       = TTGregorian
+NSL_Sat.Epoch            = '21 Jan 2022 00:00:00.000'
+NSL_Sat.CoordinateSystem = EarthMoonRotLibCoord
+NSL_Sat.DisplayStateType = Keplerian
+NSL_Sat.SMA  = 295911.9425900026
+NSL_Sat.ECC  = 0.8898246770000006
+NSL_Sat.INC  = 27.0092517
+NSL_Sat.RAAN = 17.82128320000001
+NSL_Sat.AOP = 149.2278077
+NSL_Sat.TA = 6.084727587000631
+
+Create ForceModel EarthMoonL4Prop_ForceModel
+EarthMoonL4Prop_ForceModel.PointMasses = {Earth, Luna, Sun}
+Create Propagator EarthMoonL4Prop
+EarthMoonL4Prop.FM = EarthMoonL4Prop_ForceModel
+
+%  Create the orbit view
+Create OrbitView ViewEarthMoonRot
+ViewEarthMoonRot.Add                = {Earth, Luna, Sun,...
+                                            NSL_Sat, EarthMoonL4}
+ViewEarthMoonRot.CoordinateSystem   = EarthMoonRotLibCoord
+ViewEarthMoonRot.ViewPointReference = EarthMoonL4
+ViewEarthMoonRot.ViewDirection      = EarthMoonL4
+ViewEarthMoonRot.ViewScaleFactor    = 5
+
+Create Variable I
+
+BeginMissionSequence
+
+% Prop for 3 xz-plane crossings
+For I = 1:3
+  Propagate 'Prop to Y Crossing' EarthMoonL4Prop(NSL_Sat) ...
+                      {NSL_Sat.EarthMoonRotLibCoord.Y = 0}
+EndFor

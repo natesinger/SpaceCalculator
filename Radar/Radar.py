@@ -187,7 +187,7 @@ def KalmanFilter(radarLocation,pulses):
 
 time = datetime(2021, 6, 27, 0, 9, 52, 0, tzinfo=timezone.utc)
 radarLocation = api.wgs84.latlon(8.7256, 167.715, 35)
-pulses = read_radar_data("text/radar_data.txt")
+pulses = read_radar_data("radar_data.txt")
 orbit = KalmanFilter(radarLocation, pulses)
 
 print(orbit)

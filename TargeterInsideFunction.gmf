@@ -1,0 +1,33 @@
+% Target Desired B-Plane Coordinates in this function:
+
+function TargeterInsideFunction()
+
+BeginMissionSequence
+
+Global 'Make Objects Global' MAVEN DeepSpace_ForceModel DefaultDC ...
+EarthView MainTank NearEarth_ForceModel ...
+rf SolarSystemView TCM
+
+
+Target 'Target B-plane coordinates' DefaultDC {SolveMode = Solve, ...
+	ExitMode = SaveAndContinue}
+   Propagate 'Prop 3 days' NearEarth(MAVEN) {MAVEN.ElapsedDays = 3}
+   Propagate 'Prop 12 Days to TCM' DeepSpace(MAVEN) {MAVEN.ElapsedDays = 12}
+   Vary 'Vary TCM.V' DefaultDC(TCM.Element1 = 0.001, ...
+	{Perturbation = 0.00001, MaxStep = 0.002})
+   Vary 'Vary TCM.N' DefaultDC(TCM.Element2 = 0.001, ...
+	{Perturbation = 0.00001, MaxStep = 0.002})
+   Vary 'Vary TCM.B' DefaultDC(TCM.Element3 = 0.001, ...
+	{Perturbation = 0.00001, MaxStep = 0.002})
+   Maneuver 'Apply TCM' TCM(MAVEN)
+   Propagate 'Prop 180 Days' DeepSpace(MAVEN) {MAVEN.ElapsedDays = 280}
+   Achieve 'Achieve BdotT' DefaultDC(MAVEN.L4CoordinateSystem.BdotT = 0, ...
+	{Tolerance = 0.00001})
+   Achieve 'Achieve BdotR' DefaultDC(MAVEN.L4CoordinateSystem.BdotR = -7000, ...
+	{Tolerance = 0.00001})
+EndTarget; 
+
+% Report MAVEN parameters to global 'rf' :
+Report 'Report Parameters' rf MAVEN.UTCGregorian TCM.Element1 ...
+TCM.Element2 TCM.Element3 MAVEN.L4CoordinateSystem.BdotT ...
+MAVEN.L4CoordinateSystem.BdotR MAVEN.L4CoordinateSystem.INC

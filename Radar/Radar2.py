@@ -30,7 +30,7 @@ def read_radar_data(file):
     return pulses
 
 
-pulses = read_radar_data("text/radar_data.txt")                                               # Parse the pulse data
+pulses = read_radar_data("radar_data.txt")                                               # Parse the pulse data
 lat, long, alt = 8.7256, 167.715, 35                                                          # Given radar location
 
 # PyMap3d here

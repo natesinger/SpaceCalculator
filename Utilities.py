@@ -21,19 +21,21 @@ def validateTLE(tle):
         first_line[63] == ' '):
         raise ValueError("TLE first line is invalid.")
 
-    if not (len(second_line) >= 69 and
-        second_line.startswith('2 ') and
-        second_line[7] == ' ' and
-        second_line[11] == '.' and
-        second_line[16] == ' ' and
-        second_line[20] == '.' and
-        second_line[25] == ' ' and
-        second_line[33] == ' ' and
-        second_line[37] == '.' and
-        second_line[42] == ' ' and
-        second_line[46] == '.' and
-        second_line[51] == ' '):
-        raise ValueError("TLE second line is invalid.")
+    print(len(second_line))
+
+    #if not (len(second_line) >= 69 and
+    #if not (second_line.startswith('2 ') and
+    #    second_line[7] == ' ' and
+    #    second_line[11] == '.' and
+    #    second_line[16] == ' ' and
+    #    second_line[20] == '.' and
+    #    second_line[25] == ' ' and
+    #    second_line[33] == ' ' and
+    #    #second_line[37] == '.'):# and
+    #    second_line[42] == ' ' and
+    #    second_line[46] == '.' and
+    #    second_line[51] == ' '):
+    #    raise ValueError("TLE second line is invalid.")
 
     if not (first_line[2:7] == second_line[2:7] ):
         raise ValueError("Satellite number in TLE lines one and two do not match.")
